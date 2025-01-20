@@ -1,5 +1,3 @@
-console.log("Bienvenido al Ecommerce");
-console.log("A continuacion le muestro los productos con los que contamos");
 // clase de producto
 class producto{
     constructor(id, nombre, color, precio, stock,){
@@ -9,11 +7,6 @@ class producto{
         this.precio = precio;
         this.stock = stock;
     }
-
-    descripcion() {
-        console.log(`ID: ${this.id} / Producto: ${this.nombre} / color: ${this.color} / precio: $${this.precio} // Cantidad disponibles: ${this.stock}`);
-    }
-
 }
 
 // array con los productos disponibles 
@@ -26,34 +19,33 @@ productos.push(new producto(5, "guantes", "negro", 1500, 45));
 productos.push(new producto(6, "medias", "azul", 2000, 88));
 
 
-// Muestra todos los productos con su descripcion
-function listarProductos(){
-    for(product of productos){
-        product.descripcion();
-    }
-}
-
-listarProductos();
-
 const carrito = [];
+let numCarrito = 0;
 
 
 // Agrega al carrito y validacion de stock
 function agregarProductoAlCarrito(id){
     let productoAgregado = productos.find((p) => p.id === id);
+    let stockId = "stock" + id;
+    let stockDOM = document.getElementById(stockId);
     if(productoAgregado.stock<1){
-        console.log("No hay stock del producto, lo siento.")
+        alert("No hay stock del producto, lo siento.")
     }
     else{
         carrito.push(productoAgregado);
         alert("Producto agregado al carrito.")
+        let contadorCarrito = document.getElementById('contador-carrito');
+        numCarrito = numCarrito + 1;
+        contadorCarrito.innerHTML = numCarrito;
         for(product of productos){
             if(productoAgregado===product){
                 product.stock = product.stock-1;
+                stockDOM.innerHTML = `Stock: ${product.stock}`;
             }
         }
     }
 }
+
 
 // Eliminar producto del carrito: Valida si el producto esta en el carrito y si el carrito esta vacio, ajusta stock
 function eliminarProductoDelCarrito(id){
@@ -83,82 +75,77 @@ function eliminarProductoDelCarrito(id){
 
 
 
-
-    
-// Ver productos en el carrito y valida si esta vacio
-function verCarrito(){
-    if(carrito.length<1){
-        console.log("Carrito vacio!");
-    }
-    else{
-        console.log("Productos en el carrito:")
-        for(carrit of carrito){
-            console.log(carrit);
-        }
-    }
-}
-
 // Compra del carrito: Valida si esta vacio el carrito, suma el precio de los productos, vacia el carrito, vuelve a listar los productos
 function comprarCarrito(){
+    let contadorCarrito = document.getElementById('contador-carrito');
     let suma = 0;
     if(carrito.length<1){
-        console.log("No hay nada en tu carrito para comprar!");
+        alert("No hay nada en tu carrito para comprar!");
     }else{
         for(carrit of carrito){
             suma += carrit.precio;
         }
-        console.log("Compraste los productos del carrito, precio final: " + suma);
-        console.log("productos comprados:");
-        verCarrito();
+        alert("Compraste los productos del carrito, precio final: " + suma);
         carrito.splice(0);
         alert("Compra exitosa.");
-
-        console.log("A continuacion le muestro los productos con los que contamos.");
-        listarProductos();
+        listaCarrito.innerHTML = '';
+        sumaPrecio.innerHTML = `Suma: 0`;
+        numCarrito = 0;
+        contadorCarrito.innerHTML = numCarrito;
     }
 }
 
 
-// menu
-let opcion = parseInt(prompt("Seleccione una opcion:\n 1)Agregar productos al carrito\n 2)Eliminar productos del carrito\n 3)Ver carrito\n 4)Comprar carrito\n *Cualquier otro numero para finalizar"));
+const cargarProductosAlDOM = () =>{
+    let sectionProductos = document.getElementById('productos');
+    let lista = document.createElement('ul');
 
-while(isNaN(opcion) || opcion == ""){
-    console.error("No ha ingresado un numero valido.");
-    opcion = parseInt(prompt("Seleccione una opcion:\n 1)Agregar productos al carrito\n 2)Eliminar productos del carrito\n 3)Ver carrito\n 4)Comprar carrito\n *Cualquier otro numero para finalizar"));
+    productos.forEach(producto => {
+        let item = document.createElement('li');
+        item.innerHTML = `<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">${producto.nombre}
+    <p class="card-text">Color: ${producto.color}</p>
+    <p class="card-text">Precio: $${producto.precio}</p>
+    <p id="stock${producto.id}" class="card-text">Stock: ${producto.stock}</p>
+    <button class="btn btn-primary agregar-carrito" value="${producto.id}">Agregar al carrito</button>
+  </div>
+</div>`;
+        lista.appendChild(item);
+    })
+
+    sectionProductos.appendChild(lista);
 }
 
-while(opcion>0 && opcion<5){
-    let id;
-
-    switch(opcion){
-        case 1:
-            id = parseInt(prompt("Dime el id del producto a agregar al carrito"));
-            while(isNaN(id) || id == ""){
-                id = parseInt(prompt("ID INVALIDO!. Dime el id del producto a agregar al carrito"));
-            }
-            agregarProductoAlCarrito(id);
-            break;
-        case 2:
-            id = parseInt(prompt("Dime el id del producto a eliminar del carrito"));
-            while(isNaN(id) || id == ""){
-                id = parseInt(prompt("ID INVALIDO!. Dime el id del producto a agregar al carrito"));
-            }
-            eliminarProductoDelCarrito(id);
-            break;
-        case 3:
-            verCarrito();
-            break;
-        case 4:
-            comprarCarrito()
-            break;
-    }
-
-    opcion = parseInt(prompt("Seleccione una opcion:\n 1)Agregar productos al carrito\n 2)Eliminar productos del carrito\n 3)Ver carrito\n 4)Comprar carrito\n *Cualquier otro numero para finalizar"));
-    while(isNaN(opcion) || opcion == ""){
-        console.error("No ha ingresado un numero valido.");
-        opcion = parseInt(prompt("Seleccione una opcion:\n 1)Agregar productos al carrito\n 2)Eliminar productos del carrito\n 3)Ver carrito\n 4)Comprar carrito\n *Cualquier otro numero para finalizar"));
-    }
-}
+cargarProductosAlDOM();
 
 
+let botonAgregarCarrito = document.querySelectorAll('.agregar-carrito')
+botonAgregarCarrito.forEach(boton => {
+    boton.addEventListener('click', () => {
+        const idProducto = parseInt(boton.value);
+        agregarProductoAlCarrito(idProducto);
+    });
+});
 
+
+let botonCarrito = document.getElementById('botonCarrito');
+let listaCarrito = document.getElementById('listaCarrito');
+let sumaPrecio = document.getElementById("sumaPrecio");
+botonCarrito.addEventListener('click', () => {
+    let sumaCarrito=0;
+    listaCarrito.innerHTML = '';
+    carrito.forEach(producto => {
+    let item = document.createElement('li');
+    item.innerHTML = `producto: ${producto.nombre}, precio: $${producto.precio}`;
+    sumaCarrito = sumaCarrito + producto.precio;
+    listaCarrito.appendChild(item);
+})
+sumaPrecio.innerHTML = `Suma: ${sumaCarrito}`;
+}) 
+
+
+let botonComprarCarrito = document.getElementById('comprarCarrito');
+botonComprarCarrito.addEventListener('click', () => {
+    comprarCarrito();
+}) 
