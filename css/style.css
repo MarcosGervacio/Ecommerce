@@ -18,7 +18,8 @@ h1{
     color:rgb(0, 255, 242);
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
-    margin-top: 240px;
+    margin-top: 300px;
+    margin-bottom: 40px;
 }
 
 p{
@@ -40,6 +41,13 @@ footer p{
 main {
     flex-grow: 1;
   }
+
+.descripcion{
+    color:rgb(255, 255, 255);
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-bottom: 100px;
+}
 
 .logo{
     width: 200px;
@@ -108,4 +116,9 @@ main {
 
 .modal-content{
     background-color: rgb(78, 74, 74);
+}
+
+.eliminarProducto{
+    background-color: red;
+    width: 20px;
 }
