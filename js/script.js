@@ -33,7 +33,6 @@ function agregarProductoAlCarrito(id){
     }
     else{
         carrito.push(productoAgregado);
-        alert("Producto agregado al carrito.")
         let contadorCarrito = document.getElementById('contador-carrito');
         numCarrito = numCarrito + 1;
         contadorCarrito.innerHTML = numCarrito;
@@ -50,6 +49,8 @@ function agregarProductoAlCarrito(id){
 // Eliminar producto del carrito: Valida si el producto esta en el carrito y si el carrito esta vacio, ajusta stock
 function eliminarProductoDelCarrito(id){
     let productoEliminado = carrito.find((p) => p.id === id);
+    let stockId = "stock" + id;
+    let stockDOM = document.getElementById(stockId);
     let idProductoEliminado = carrito.indexOf(productoEliminado);
     let verificaProducto = false;
     verificaProducto = carrito.includes(productoEliminado);
@@ -60,13 +61,13 @@ function eliminarProductoDelCarrito(id){
     else{
         if(verificaProducto){
             carrito.splice(idProductoEliminado, 1);
-            alert("Producto eliminado.");
             let contadorCarrito = document.getElementById('contador-carrito');
             numCarrito = numCarrito - 1;
             contadorCarrito.innerHTML = numCarrito;
             for(product of productos){
                 if(productoEliminado===product){
                     product.stock = product.stock+1;
+                    stockDOM.innerHTML = `Stock: ${product.stock}`;
                 }
             }
         }
