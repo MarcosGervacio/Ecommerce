@@ -18,7 +18,7 @@
                 <li><a href="">Inicio</a></li>
                 <li><a href="#descripcion">Nosotros</a></li>
                 <li><a href="#productos">Productos</a></li>
-                <li><a href="">Contactanos</a></li>
+                <li><a href="#contactanos">Contactanos</a></li>
             </ul>
             <div class="carrito">
                 <img id="botonCarrito" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" src="assets/carrito.png" alt="img carrito" width="60">
@@ -61,6 +61,28 @@
         <section id="productos">
 
         </section>
+
+        <h2 id="contactanos">Contactanos por cualquier consulta.</h2>
+
+        <form id="form">
+          <div class="field">
+            <label for="from_name">Nombre completo</label>
+            <br>
+            <input type="text" name="from_name" id="from_name" />
+          </div>
+          <div class="field">
+            <label for="mensaje">mensaje</label>
+            <br>
+            <textarea class="form-mensaje" type="text" name="mensaje" id="mensaje"></textarea>
+          </div>
+          <div class="field">
+            <label for="email_id">Email</label>
+            <br>
+            <input type="text" name="email_id" id="email_id" />
+          </div>
+        
+          <input type="submit" id="button" value="Enviar" />
+        </form>
     </main>
 
 
@@ -68,6 +90,13 @@
         <p>© 2025 Mi Ecommerce</p>
     </footer>
 
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    <script type="text/javascript">
+       emailjs.init("9VvdtYHxVWWvPen7m")
+    </script>
     <script src="js/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

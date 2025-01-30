@@ -234,3 +234,38 @@ if(carritoAlmacenado!==null){
 
 
 
+const btn = document.getElementById('button');
+
+document.getElementById('form')
+ .addEventListener('submit', function(event) {
+   event.preventDefault();
+
+   btn.value = 'Enviando...';
+
+   const serviceID = 'default_service';
+   const templateID = 'template_r57vt16';
+
+   emailjs.sendForm(serviceID, templateID, this)
+    .then(() => {
+      btn.value = 'Enviar';
+      Toastify({
+        text: "Se envio un correo exitosamente!.",
+        style: {
+            background: "linear-gradient(to right,rgb(122, 250, 160),rgb(0, 255, 0))",
+            color: "white",
+            fontWeight: "bold",
+          }
+      }).showToast();
+    }, (err) => {
+      btn.value = 'Enviar';
+      let msj=(JSON.stringify(err));
+      Toastify({
+        text: msj,
+        style: {
+            background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
+            color: "white",
+            fontWeight: "bold",
+          }
+      }).showToast();
+    });
+});
