@@ -29,7 +29,14 @@ function agregarProductoAlCarrito(id){
     let stockId = "stock" + id;
     let stockDOM = document.getElementById(stockId);
     if(productoAgregado.stock<1){
-        alert("No hay stock del producto, lo siento.")
+        Toastify({
+            text: "No hay stock del producto, lo siento.",
+            style: {
+                background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
+                color: "white",
+                fontWeight: "bold",
+              }
+          }).showToast();
     }
     else{
         carrito.push(productoAgregado);
@@ -83,15 +90,11 @@ function eliminarProductoDelCarrito(id){
 function comprarCarrito(){
     let contadorCarrito = document.getElementById('contador-carrito');
     let suma = 0;
-    if(carrito.length<1){
-        alert("No hay nada en tu carrito para comprar!");
-    }else{
+    if(!carrito.length<1){
         for(carrit of carrito){
             suma += carrit.precio;
         }
-        alert("Compraste los productos del carrito, precio final: " + suma);
         carrito.splice(0);
-        alert("Compra exitosa.");
         listaCarrito.innerHTML = '';
         sumaPrecio.innerHTML = `Suma: $0`;
         numCarrito = 0;
@@ -101,11 +104,11 @@ function comprarCarrito(){
 }
 
 
-const cargarProductosAlDOM = () =>{
+const cargarProductosAlDOM = (arrayRecibido) =>{
     let sectionProductos = document.getElementById('productos');
     let lista = document.createElement('ul');
 
-    productos.forEach(producto => {
+    arrayRecibido.forEach(producto => {
         let item = document.createElement('li');
         item.innerHTML = `<div class="card" style="width: 18rem;">
   <div class="card-body">
@@ -122,7 +125,7 @@ const cargarProductosAlDOM = () =>{
     sectionProductos.appendChild(lista);
 }
 
-cargarProductosAlDOM();
+cargarProductosAlDOM(productos);
 
 
 let botonAgregarCarrito = document.querySelectorAll('.agregar-carrito')
@@ -135,10 +138,10 @@ botonAgregarCarrito.forEach(boton => {
 });
 
 
-let botonCarrito = document.getElementById('botonCarrito');
-let listaCarrito = document.getElementById('listaCarrito');
+
 let sumaPrecio = document.getElementById("sumaPrecio");
-botonCarrito.addEventListener('click', () => {
+const cargarCarrito = () => {
+    let listaCarrito = document.getElementById('listaCarrito');
     let sumaCarrito=0;
     listaCarrito.innerHTML = '';
     carrito.forEach(producto => {
@@ -151,20 +154,73 @@ sumaPrecio.innerHTML = `Suma: $${sumaCarrito}`;
 let eliminarProducto = document.querySelectorAll('.eliminarProducto');
 eliminarProducto.forEach(boton => {
     boton.addEventListener('click', () => {
-        const idProducto = parseInt(boton.value);
-        eliminarProductoDelCarrito(idProducto);
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        const cerrarCarrito = document.querySelector('#cerrarCarrito');
-        cerrarCarrito.click();
-    });
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "Estas eliminando un producto del carrito",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "¡Sí, bórralo!",
+            cancelButtonText: "Cancelar"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                const idProducto = parseInt(boton.value);
+                eliminarProductoDelCarrito(idProducto);
+                cargarCarrito();
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+              Swal.fire({
+                title: "¡Eliminado!",
+                text: "Su producto ha sido eliminado.",
+                icon: "success"
+              });
+            }
+          });
+    })});
+};
+
+
+let botonCarrito = document.getElementById('botonCarrito');
+botonCarrito.addEventListener('click', () => {
+    cargarCarrito();
 });
-}) 
+
 
 
 let botonComprarCarrito = document.getElementById('comprarCarrito');
 botonComprarCarrito.addEventListener('click', () => {
-    comprarCarrito();
+    if(carrito.length<1){
+        Toastify({
+            text: "No hay nada en tu carrito para comprar!",
+            style: {
+                background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
+                color: "white",
+                fontWeight: "bold",
+              }
+          }).showToast();
+        }else{
+            Swal.fire({
+                title: "¿Está seguro?",
+                text: "Estas a punto de realizar la compra de tu carrito",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "¡Sí, comprar!",
+                cancelButtonText: "Cancelar"
+              }).then((result) => {
+                if (result.isConfirmed) {
+                    comprarCarrito();
+                  Swal.fire({
+                    title: "¡Comprado!",
+                    text: "Su compra a finalizado con exito!.",
+                    icon: "success"
+                  });
+                }
+              });
+        }
 }) 
+
 
 const carritoAlmacenado = JSON.parse(localStorage.getItem('carrito'));
 if(carritoAlmacenado!==null){
