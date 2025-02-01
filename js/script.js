@@ -39,6 +39,14 @@ function agregarProductoAlCarrito(id){
           }).showToast();
     }
     else{
+        Toastify({
+            text: "Producto agregado al carrito!.",
+            style: {
+                background: "linear-gradient(to right,rgb(122, 250, 160),rgb(0, 255, 0))",
+                color: "white",
+                fontWeight: "bold",
+              }
+          }).showToast();
         carrito.push(productoAgregado);
         let contadorCarrito = document.getElementById('contador-carrito');
         numCarrito = numCarrito + 1;
@@ -256,9 +264,9 @@ document.getElementById('form')
             fontWeight: "bold",
           }
       }).showToast();
-    }, (err) => {
+    }, () => {
       btn.value = 'Enviar';
-      let msj=(JSON.stringify(err));
+      let msj= "No se pudo enviar el correo, intente nuevamente mas tarde!."
       Toastify({
         text: msj,
         style: {
