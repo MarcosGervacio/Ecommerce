@@ -130,7 +130,7 @@ const cargarProductosAlDOM = (arrayRecibido) =>{
 
 // peticion fetch, busca los productos en el json y los guarda en el array productos
 const peticionProductos = () => {
-    fetch ('/productos.json')
+    fetch ('../productos.json')
     .then((respuesta) => respuesta.json())
     .then((datos) => {
         const data = datos;
