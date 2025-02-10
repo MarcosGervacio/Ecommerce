@@ -1,27 +1,19 @@
 // clase de producto
 class producto{
-    constructor(id, nombre, color, precio, stock,){
+    constructor(id, nombre, img, color, precio, stock){
         this.id = id;
         this.nombre = nombre;
+        this.img = img;
         this.color = color;
         this.precio = precio;
         this.stock = stock;
     }
 }
 
-// array con los productos disponibles 
+// arrays de productos, carrito, contador de productos en carrito
 const productos = [];
-productos.push(new producto(1, "remera", "verde", 20000, 10));
-productos.push(new producto(2, "gorra", "roja", 5000, 2));
-productos.push(new producto(3, "buzo", "negro", 40000, 60));
-productos.push(new producto(4, "campera", "azul y negro", 70000, 50));
-productos.push(new producto(5, "guantes", "negro", 1500, 45));
-productos.push(new producto(6, "medias", "azul", 2000, 88));
-
-
 const carrito = [];
 let numCarrito = 0;
-
 
 // Agrega al carrito y validacion de stock
 function agregarProductoAlCarrito(id){
@@ -94,7 +86,7 @@ function eliminarProductoDelCarrito(id){
 
 
 
-// Compra del carrito: Valida si esta vacio el carrito, suma el precio de los productos, vacia el carrito, vuelve a listar los productos
+// Compra del carrito: Valida si esta vacio el carrito, suma el precio de los productos, vacia el carrito
 function comprarCarrito(){
     let contadorCarrito = document.getElementById('contador-carrito');
     let suma = 0;
@@ -111,16 +103,18 @@ function comprarCarrito(){
     }
 }
 
-
+// recibe un array y los carga en el DOM
 const cargarProductosAlDOM = (arrayRecibido) =>{
     let sectionProductos = document.getElementById('productos');
+    sectionProductos.innerHTML = '';
     let lista = document.createElement('ul');
-
     arrayRecibido.forEach(producto => {
         let item = document.createElement('li');
         item.innerHTML = `<div class="card" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">${producto.nombre}
+    <br>
+    <img src="${producto.img}" alt="${producto.nombre}" width="100px">
     <p class="card-text">Color: ${producto.color}</p>
     <p class="card-text">Precio: $${producto.precio}</p>
     <p id="stock${producto.id}" class="card-text">Stock: ${producto.stock}</p>
@@ -133,20 +127,29 @@ const cargarProductosAlDOM = (arrayRecibido) =>{
     sectionProductos.appendChild(lista);
 }
 
-cargarProductosAlDOM(productos);
+
+// peticion fetch, busca los productos en el json y los guarda en el array productos
+const peticionProductos = () => {
+    fetch ('/productos.json')
+    .then((respuesta) => respuesta.json())
+    .then((datos) => {
+        const data = datos;
+        data.forEach(produc => {
+            productos.push(new producto(produc.id, 
+            produc.nombre, 
+            produc.img,
+            produc.color, 
+            produc.precio, 
+            produc.stock));
+      });
+      cargarProductosAlDOM(productos);
+      actualizarBotonAgregarCarrito();
+    })
+}
+peticionProductos();
 
 
-let botonAgregarCarrito = document.querySelectorAll('.agregar-carrito')
-botonAgregarCarrito.forEach(boton => {
-    boton.addEventListener('click', () => {
-        const idProducto = parseInt(boton.value);
-        agregarProductoAlCarrito(idProducto);
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-    });
-});
-
-
-
+// carga de productos en carrito en el momento de apretar el boton del carrito, con opcion para eliminar los productos del mismo.
 let sumaPrecio = document.getElementById("sumaPrecio");
 const cargarCarrito = () => {
     let listaCarrito = document.getElementById('listaCarrito');
@@ -194,7 +197,7 @@ botonCarrito.addEventListener('click', () => {
 });
 
 
-
+// boton de compra carrito
 let botonComprarCarrito = document.getElementById('comprarCarrito');
 botonComprarCarrito.addEventListener('click', () => {
     if(carrito.length<1){
@@ -230,6 +233,7 @@ botonComprarCarrito.addEventListener('click', () => {
 }) 
 
 
+// almacenamiento de localStorage para los productos del carrito
 const carritoAlmacenado = JSON.parse(localStorage.getItem('carrito'));
 if(carritoAlmacenado!==null){
     for (let i = 0; i < carritoAlmacenado.length; i++) {
@@ -241,39 +245,95 @@ if(carritoAlmacenado!==null){
 }
 
 
-
+// implementacion de emailJs. valida que no pueda haber campos vacios. alertas.
 const btn = document.getElementById('button');
 
 document.getElementById('form')
  .addEventListener('submit', function(event) {
-   event.preventDefault();
+    event.preventDefault();
 
-   btn.value = 'Enviando...';
+    const txtName = document.getElementById('from_name');
+    const txtMensaje = document.getElementById('mensaje');
+    const txtEmail = document.getElementById('email_id');
 
-   const serviceID = 'default_service';
-   const templateID = 'template_r57vt16';
+    // Validacion de campos vacíos
+    if (txtName.value === "" || txtMensaje.value === "" || txtEmail.value === "") {
+        let msj= "No puedes dejar campos vacios en el formulario!."
+           Toastify({
+             text: msj,
+             style: {
+                 background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
+                 color: "white",
+                 fontWeight: "bold",
+               }
+           }).showToast();
+        return; 
+    }
 
-   emailjs.sendForm(serviceID, templateID, this)
-    .then(() => {
-      btn.value = 'Enviar';
-      Toastify({
-        text: "Se envio un correo exitosamente!.",
-        style: {
-            background: "linear-gradient(to right,rgb(122, 250, 160),rgb(0, 255, 0))",
-            color: "white",
-            fontWeight: "bold",
-          }
-      }).showToast();
-    }, () => {
-      btn.value = 'Enviar';
-      let msj= "No se pudo enviar el correo, intente nuevamente mas tarde!."
-      Toastify({
-        text: msj,
-        style: {
-            background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
-            color: "white",
-            fontWeight: "bold",
-          }
-      }).showToast();
-    });
+
+        btn.value = 'Enviando...';
+     
+        const serviceID = 'default_service';
+        const templateID = 'template_r57vt16';
+     
+        emailjs.sendForm(serviceID, templateID, this)
+         .then(() => {
+           btn.value = 'Enviar';
+           txtName.value='';
+           txtMensaje.value='';
+           txtEmail.value='';
+           Toastify({
+             text: "Se envio un correo exitosamente!.",
+             style: {
+                 background: "linear-gradient(to right,rgb(122, 250, 160),rgb(0, 255, 0))",
+                 color: "white",
+                 fontWeight: "bold",
+               }
+           }).showToast();
+         }, () => {
+           btn.value = 'Enviar';
+           let msj= "No se pudo enviar el correo, intente nuevamente mas tarde!."
+           Toastify({
+             text: msj,
+             style: {
+                 background: "linear-gradient(to right,rgb(250, 162, 162),rgb(255, 0, 0))",
+                 color: "white",
+                 fontWeight: "bold",
+               }
+           }).showToast();
+         });
 });
+
+
+// buscador de productos en DOM
+function buscarProductos(valor) {
+    return productos.filter(producto => 
+      producto.nombre.toLowerCase().includes(valor.toLowerCase())
+    );
+}
+const inputBuscador = document.getElementById('inputBuscador');
+const btnBuscador = document.getElementById('btnBuscador');
+btnBuscador.addEventListener('click', () => {
+    console.log("a");
+    const valor = inputBuscador.value;
+    console.log(valor);
+    let nuevoArray = [];
+    nuevoArray = buscarProductos(valor);
+    console.log(nuevoArray);
+    cargarProductosAlDOM(nuevoArray);
+    actualizarBotonAgregarCarrito();
+});
+
+// se realiza la funcion para su reutilizacion a la hora de carga de productos nuevos en el dom por busqueda y por inicializacion del json
+const actualizarBotonAgregarCarrito = () => {
+    let botonAgregarCarrito = document.querySelectorAll('.agregar-carrito')
+    botonAgregarCarrito.forEach(boton => {
+        boton.addEventListener('click', () => {
+            const idProducto = parseInt(boton.value);
+            agregarProductoAlCarrito(idProducto);
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+        });
+    });
+}
+
+
